@@ -4,6 +4,8 @@
  */
 package Piezas;
 
+import javax.swing.ImageIcon;
+
 
 /**
  *
@@ -28,32 +30,36 @@ public class Peon extends javax.swing.JPanel implements Figuras{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        Titulo = new javax.swing.JButton();
+        icono = new javax.swing.JButton();
 
         setMaximumSize(new java.awt.Dimension(40, 40));
+        setOpaque(false);
         setPreferredSize(new java.awt.Dimension(40, 40));
         setLayout(new java.awt.GridLayout(1, 0));
 
-        Titulo.setText("P");
-        Titulo.addActionListener(new java.awt.event.ActionListener() {
+        icono.setBackground(new java.awt.Color(255, 255, 255));
+        icono.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ImagenesFiguras/peonNegro.png"))); // NOI18N
+        icono.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TituloActionPerformed(evt);
+                iconoActionPerformed(evt);
             }
         });
-        add(Titulo);
+        add(icono);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void TituloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TituloActionPerformed
+    private void iconoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iconoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_TituloActionPerformed
+    }//GEN-LAST:event_iconoActionPerformed
 
     @Override
     public int[] moverFigura() {
        return coordenadas;
     }
 
-
+    public void setIcono(ImageIcon icon){
+        icono.setIcon(icon);
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton Titulo;
+    private javax.swing.JButton icono;
     // End of variables declaration//GEN-END:variables
 }

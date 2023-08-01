@@ -27,8 +27,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         tablero1 = new ajedrez.Tablero();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(400, 400));
-        getContentPane().setLayout(new java.awt.GridLayout());
+        setMinimumSize(new java.awt.Dimension(500, 500));
+        setPreferredSize(new java.awt.Dimension(500, 500));
+        getContentPane().setLayout(new java.awt.GridLayout(1, 0));
         getContentPane().add(tablero1);
 
         pack();
