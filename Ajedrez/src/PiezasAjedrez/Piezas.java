@@ -46,7 +46,49 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     public static void setTablero(JPanel[][] tablero) {
         Piezas.tablero=tablero;
     }
-
+    
+    /**
+     * actualizartablero()
+     * Actualiza el tablero tras mover o comer una figura/pieza.
+     * @param filaAnt: fila actual en la que se encuentra la pieza a mover
+     * @param col: columna en la que se encuentra la pieza a mover 
+     */
+    public abstract void actualizarTablero(int filaAnt,int col);
+    
+    /**
+    * comprobarPieza()
+    * Comprueba si hay una pieza en las coordenadas dadas
+    * @param fila: fila donde hay que comprobar si se halla una pieza
+    * @param columna: columna donde hay que comprobar si se halla una pieza
+    * @return pieza: booleano, true si hay una pieza en la casilla a comprobar, false si no.
+    */
+    boolean comprobarPieza(int fila, int col){
+        boolean pieza=false;
+        if(this.tablero[fila][col].getComponents().length>0){
+            /*System.out.println("NO SE PUEDE MOVER");*/
+            pieza=true;
+        }
+        return pieza;
+    }
+    
+    /**
+    * escogerDesplazamiento()
+    * Permite escoger el desplazamiento de las piezas
+    * Cuantas casillas avanza
+    */
+    public abstract int escogerDesplazamiento();
+    
+    /**
+     * realizarDesplazamiento()
+     * Comprueba si se puede mover la figura a la casilla que queremos, en caso afirmativo actualiza las
+     * coordenadas.
+     * @param filaAnt: fila actual en la que se encuentra la pieza a mover
+     * @param col: columna en la que se encuentra la pieza a mover
+     * @param desplazamiento: cantidad de casillas que la figura se desplaza en caso de poderse 
+     * @return moverse: booleano, true si la pieza puede moverse
+    */
+    public abstract boolean realizarDesplazamiento(int filaAnt,int col,int desplazamiento);
+    
     /**
     * MoverFigura()
     * Define el movimiento de cada figura
@@ -67,6 +109,13 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     * @param fila: fila del tablero en la que se encuentra la pieza
     * @param columna: columna del tablero en la que se encuentra la pieza
     */
+    
+    
+    
+    
+    
+    
+    
     @Override
     public abstract void setCoordenadas(int fila,int columna);
     

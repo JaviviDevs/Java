@@ -4,7 +4,7 @@
  */
 package PiezasAjedrez;
 
-import static PiezasAjedrez.Figuras.TAM_COORDENADAS;
+import java.util.Scanner;
 import javax.swing.ImageIcon;
 
 /**
@@ -14,6 +14,7 @@ import javax.swing.ImageIcon;
  */
 public class Peon extends Piezas{
     private boolean inicio;
+    Scanner entradaDatos;
 
     /**
     * Creates new form Peon
@@ -22,8 +23,81 @@ public class Peon extends Piezas{
     
     public Peon() {
         this.inicio=true;
+        entradaDatos = new Scanner(System.in);
     }
     
+    /**
+    * escogerDesplazamiento()
+    * Permite escoger el desplazamiento inicial de los peones
+    * Al inicio los peones pueden avanzar una o dos casillas.
+    * @return desplazamiento: desplazamiento escogido
+    */
+    @Override
+    public int escogerDesplazamiento(){
+        int desplazamiento=0;
+        while(desplazamiento<1 || desplazamiento>2){
+            System.out.print("Ingresa el desplazamiento(1 o 2): ");
+            desplazamiento = entradaDatos.nextInt();
+            System.out.println("Desplazamiento escogido: " + desplazamiento);
+        }
+        
+        return desplazamiento;
+    }
+    
+    /**
+     * realizarDesplazamiento()
+     * Comprueba si se puede mover la figura a la casilla que queremos, en caso afirmativo actualiza las
+     * coordenadas.
+     * @param filaAnt: fila actual en la que se encuentra la pieza a mover
+     * @param col: columna en la que se encuentra la pieza a mover
+     * @param desplazamiento: cantidad de casillas que la figura se desplaza en caso de poderse 
+     * @return moverse: booleano, true si la pieza puede moverse
+    */
+    public boolean realizarDesplazamiento(int filaAnt,int col,int desplazamiento){
+        int fila=filaAnt;
+        
+        boolean moverse=true;
+        boolean hayPiezaPrimeraCasilla=false;
+        boolean hayPiezaSegundaCasilla=false;
+        if(this.blanco){
+           fila=filaAnt-desplazamiento;
+        }else{
+           fila=filaAnt+desplazamiento;
+        }
+        
+        if(desplazamiento==2){
+            hayPiezaSegundaCasilla=comprobarPieza(fila,col);
+            if(this.blanco){
+                hayPiezaPrimeraCasilla=this.comprobarPieza(filaAnt-1,col);
+            }else{
+                hayPiezaPrimeraCasilla=this.comprobarPieza(filaAnt+1,col);
+            }
+        }else{
+            hayPiezaPrimeraCasilla=this.comprobarPieza(fila,col);
+        }
+        
+        if(hayPiezaPrimeraCasilla || hayPiezaSegundaCasilla){
+            moverse=false;
+        }else{
+          this.coordenadas[0]=fila;
+        }
+        
+        return moverse;
+    }
+    
+    /**
+     * actualizartablero()
+     * Actualiza el tablero tras mover o comer una figura/pieza.
+     * @param filaAnt: fila actual en la que se encuentra la pieza a mover
+     * @param col: columna en la que se encuentra la pieza a mover 
+     */
+    @Override
+    public void actualizarTablero(int filaAnt,int col){
+        int fila=this.coordenadas[0];
+        tablero[filaAnt][col].remove(this);
+        tablero[filaAnt][col].repaint();
+        tablero[fila][col].add(this);
+    }
     /**
     * MoverFigura()
     * Define el movimiento de la figura: Peon
@@ -31,23 +105,19 @@ public class Peon extends Piezas{
     @Override
     public void moverFigura() {
        int desplazamiento=1;
-       int filaant=coordenadas[0];
-       int col=coordenadas[1];
-       if(inicio){
-           desplazamiento=2;
-       }
+       int filaAnt=this.coordenadas[0];
+       int col=this.coordenadas[1];
+       boolean moverFigura=true;
        
-       if(blanco){
-           coordenadas[0]=filaant-desplazamiento;
-       }else{
-           coordenadas[0]=filaant+desplazamiento;
+       if(this.inicio){
+           desplazamiento=this.escogerDesplazamiento();
        }
+       moverFigura=this.realizarDesplazamiento(filaAnt,col,desplazamiento);
        
-       int fila=coordenadas[0];
-       tablero[filaant][col].remove(this);
-       tablero[filaant][col].repaint();
-       tablero[fila][col].add(this);
-       inicio=false;
+       if(moverFigura){
+            actualizarTablero(filaAnt,col);
+            inicio=false;
+       }
     }
     
     /**
@@ -90,9 +160,5 @@ public class Peon extends Piezas{
     public void setColor(boolean blanco){
         this.blanco=blanco;
     }
-    
-    
-    
-    
     
 }
