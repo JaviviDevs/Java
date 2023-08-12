@@ -6,6 +6,7 @@ package PiezasAjedrez;
 
 import static ajedrez.Tablero.COLUMNAS;
 import static ajedrez.Tablero.FILAS;
+import java.util.Scanner;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
@@ -24,7 +25,7 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     static JPanel[][] tablero; // La interfaz que muestra el tablero
     int[] coordenadas; // Coordenadas da cada pieza
     boolean blanco; // Si sonde color blanco o negro
-    
+    Scanner entradaDatos; //Entrada de datos, para el menu acciones
     /**
      * Creates new form Piezas
      * Constructor de la clase piezas
@@ -34,6 +35,7 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
         this.tablero= new JPanel[FILAS][COLUMNAS];
         this.blanco=true;
         this.coordenadas = new int[Piezas.TAM_COORDENADAS];
+        this.entradaDatos = new Scanner(System.in);
     }
     
     /**
@@ -72,6 +74,38 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     }
     
     /**
+    * puedeRealizarAccion()
+    * Comprueba si la pieza pieza se sale del tablero al realizar una accion
+    * @param desH: True si la accion desencadena un movimiento horizontal
+    * @param desV: True si la accion desencadena un movimiento vertical
+    * @param disH: numero de casillas que se desplaza en horizontal
+    * @param disV: numero de casillas que se desplaza en vertical
+    * @param realizarAccion: True si se puede mover la figura,False si no.
+    * @return pieza: booleano, true si hay una pieza en la casilla a comprobar, false si no.
+    */
+    public boolean puedeRealizarAccion(boolean desH,boolean desV,int disH,int disV){
+        boolean realizarAccion=true;
+        if(desH){
+            if(coordenadas[1]+disH>(COLUMNAS-1) || coordenadas[1]+disH<0){
+                realizarAccion=false;
+            }
+        }
+        
+        if(desV){
+            if(coordenadas[0]+disV>(FILAS-1) || coordenadas[0]+disV<0){
+                realizarAccion=false;
+            }
+        }
+        return realizarAccion;
+    }
+    /**
+    * puedeComer()
+    * Comprueba si la figura puede comerse a otra
+    * @return comer: booleano, true si se puede comer una pieza, false si no.
+    */
+    public abstract boolean[] puedeComer();
+       
+    /**
     * escogerDesplazamiento()
     * Permite escoger el desplazamiento de las piezas
     * Cuantas casillas avanza
@@ -109,9 +143,6 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     * @param fila: fila del tablero en la que se encuentra la pieza
     * @param columna: columna del tablero en la que se encuentra la pieza
     */
-    
-    
-    
     
     
     
@@ -172,10 +203,35 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     * @param evt: evento que surge de clicar el boton de la pieza.
     */
     private void iconoFiguraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iconoFiguraActionPerformed
-        this.moverFigura();
+        boolean[] pcomer=this.puedeComer();
+        if(pcomer[0] || pcomer[1]){
+            int accion=menuAcciones();
+            if(accion==1){
+                this.comerFigura();
+            }else{
+                this.moverFigura();
+            }
+        }else{
+            this.moverFigura();
+        }
+        
     }//GEN-LAST:event_iconoFiguraActionPerformed
-
     
+    /**
+    * menuAcciones()()
+    * Cuando pulsamos en la figura, esta se mueve o despliega un menu acerca de como moverse
+    * @param accion: accion que puede hacer la figura : 1 comer, 2 moverse 
+    */
+    Integer menuAcciones(){
+        int accion=0;
+        while(accion<1 || accion>2){
+            System.out.print("Ingresa la accion(1 comer o 2 moverse): ");
+            accion = this.entradaDatos.nextInt();
+            System.out.println("Accion escogida: " + accion);
+        }
+        
+        return accion;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     javax.swing.JButton iconoFigura;
     // End of variables declaration//GEN-END:variables

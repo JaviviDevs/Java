@@ -4,6 +4,7 @@
  */
 package PiezasAjedrez;
 
+import java.awt.Component;
 import java.util.Scanner;
 import javax.swing.ImageIcon;
 
@@ -23,7 +24,7 @@ public class Peon extends Piezas{
     
     public Peon() {
         this.inicio=true;
-        entradaDatos = new Scanner(System.in);
+        this.entradaDatos = new Scanner(System.in);
     }
     
     /**
@@ -37,7 +38,7 @@ public class Peon extends Piezas{
         int desplazamiento=0;
         while(desplazamiento<1 || desplazamiento>2){
             System.out.print("Ingresa el desplazamiento(1 o 2): ");
-            desplazamiento = entradaDatos.nextInt();
+            desplazamiento = this.entradaDatos.nextInt();
             System.out.println("Desplazamiento escogido: " + desplazamiento);
         }
         
@@ -54,32 +55,39 @@ public class Peon extends Piezas{
      * @return moverse: booleano, true si la pieza puede moverse
     */
     public boolean realizarDesplazamiento(int filaAnt,int col,int desplazamiento){
+        boolean moverse=false;
+        boolean realizarAccion=true;
+       
         int fila=filaAnt;
-        
-        boolean moverse=true;
-        boolean hayPiezaPrimeraCasilla=false;
-        boolean hayPiezaSegundaCasilla=false;
         if(this.blanco){
            fila=filaAnt-desplazamiento;
+           realizarAccion=this.puedeRealizarAccion(false,true,0,-desplazamiento);
         }else{
            fila=filaAnt+desplazamiento;
+           realizarAccion=this.puedeRealizarAccion(false,true,0,desplazamiento);
         }
-        
-        if(desplazamiento==2){
-            hayPiezaSegundaCasilla=comprobarPieza(fila,col);
-            if(this.blanco){
-                hayPiezaPrimeraCasilla=this.comprobarPieza(filaAnt-1,col);
+
+        if(realizarAccion){ 
+            boolean hayPiezaPrimeraCasilla=false;
+            boolean hayPiezaSegundaCasilla=false;
+
+            if(desplazamiento==2){
+                hayPiezaSegundaCasilla=super.comprobarPieza(fila,col);
+                if(this.blanco){
+                    hayPiezaPrimeraCasilla=super.comprobarPieza(filaAnt-1,col);
+                }else{
+                    hayPiezaPrimeraCasilla=super.comprobarPieza(filaAnt+1,col);
+                }
             }else{
-                hayPiezaPrimeraCasilla=this.comprobarPieza(filaAnt+1,col);
+                hayPiezaPrimeraCasilla=super.comprobarPieza(fila,col);
             }
-        }else{
-            hayPiezaPrimeraCasilla=this.comprobarPieza(fila,col);
-        }
-        
-        if(hayPiezaPrimeraCasilla || hayPiezaSegundaCasilla){
-            moverse=false;
-        }else{
-          this.coordenadas[0]=fila;
+
+            if(hayPiezaPrimeraCasilla || hayPiezaSegundaCasilla){
+                moverse=false;
+            }else{
+              this.coordenadas[0]=fila;
+              moverse=true;
+            }
         }
         
         return moverse;
@@ -88,14 +96,15 @@ public class Peon extends Piezas{
     /**
      * actualizartablero()
      * Actualiza el tablero tras mover o comer una figura/pieza.
-     * @param filaAnt: fila actual en la que se encuentra la pieza a mover
-     * @param col: columna en la que se encuentra la pieza a mover 
+     * @param filaAnt: fila en la que se encontraba la figura
+     * @param colAnt: columna en la que se encontraba la figura
      */
     @Override
-    public void actualizarTablero(int filaAnt,int col){
+    public void actualizarTablero(int filaAnt,int colAnt){
         int fila=this.coordenadas[0];
-        tablero[filaAnt][col].remove(this);
-        tablero[filaAnt][col].repaint();
+        int col=this.coordenadas[1];
+        tablero[filaAnt][colAnt].remove(this);
+        tablero[filaAnt][colAnt].repaint();
         tablero[fila][col].add(this);
     }
     /**
@@ -121,12 +130,101 @@ public class Peon extends Piezas{
     }
     
     /**
+    * puedeComer()
+    * Comprueba si la figura puede comerse a otra
+    * @return comer: booleano, true si se puede comer una pieza, false si no.
+    */
+    
+    @Override
+    public boolean[] puedeComer() {
+        int desplazamiento=1;
+        boolean[] comer=new boolean[Piezas.TAM_COORDENADAS];
+        comer[0]=comer[1]=false;
+        boolean pComerHIzq=true;
+        boolean pComerDcha=true;
+        
+        int filaAct=this.coordenadas[0];
+        int colAct=this.coordenadas[1];
+        int fila=filaAct;
+        
+        if(this.blanco){
+           fila=filaAct-desplazamiento;
+           pComerHIzq=this.puedeRealizarAccion(true, true, -desplazamiento,-desplazamiento);
+           pComerDcha=this.puedeRealizarAccion(true, true, desplazamiento,-desplazamiento);
+        }else{
+           fila=filaAct+desplazamiento;
+           pComerHIzq=this.puedeRealizarAccion(true, true, -desplazamiento,desplazamiento);
+           pComerDcha=this.puedeRealizarAccion(true, true, desplazamiento,desplazamiento);
+        }
+       
+        if(pComerHIzq){
+            if(super.comprobarPieza(fila,colAct-desplazamiento)){
+               comer[0]=true;
+            }
+        } 
+        
+        if(pComerDcha){
+            if(super.comprobarPieza(fila,colAct+desplazamiento)){
+               comer[1]=true;
+            }
+        } 
+       
+       return comer;
+    }
+    
+    Integer eligeFiguraComer(){
+        int accion=0;
+        while(accion<1 || accion>2){
+            System.out.print("Ingresa la accion(1 comer izq o 2 comer dcha): ");
+            accion = this.entradaDatos.nextInt();
+            System.out.println("Accion escogida: " + accion);
+        }
+        
+        return accion;
+    }
+    /**
     * comerFigura()
     * Define la acción de comer una figura, en este caso define como come la figura: Peon
     */
     @Override
     public void comerFigura() {
+       
+        int desplazamiento=1;
+        boolean[] pcomer=this.puedeComer();
+        
+        int filaAct=this.coordenadas[0];
+        int colAct=this.coordenadas[1];
+        int nFil=filaAct;
+        int nCol=colAct;
+        
+        if(this.blanco){
+            nFil=filaAct-desplazamiento;
+        }else{
+            nFil=filaAct+desplazamiento;
+        }
+       
+        if(pcomer[0] && pcomer[1]){
+            int accion=eligeFiguraComer();
+            if(accion==1){
+                nCol=colAct-desplazamiento;
+            }else{
+                nCol=colAct+desplazamiento;
+            }
+        }else if(pcomer[0]){
+            nCol=colAct-desplazamiento;
+        }else if(pcomer[1]){
+            nCol=colAct+desplazamiento;
+        }
+        
+        
+       
+        Component piezaComida=this.tablero[nFil][nCol].getComponent(0);
+        tablero[nFil][nCol].remove(piezaComida);
+        tablero[nFil][nCol].repaint();
 
+        this.coordenadas[0]=nFil;
+        this.coordenadas[1]=nCol;
+        this.actualizarTablero(filaAct, colAct);
     }
     
     /**
