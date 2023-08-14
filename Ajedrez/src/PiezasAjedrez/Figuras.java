@@ -4,7 +4,6 @@
  */
 package PiezasAjedrez;
 import javax.swing.ImageIcon;
-import javax.swing.JPanel;
 
 /**
  *
@@ -15,10 +14,28 @@ public interface Figuras {
     public int TAM_COORDENADAS = 2;
     
     /**
+     * realizarDesplazamiento()
+     * Comprueba si se puede mover la figura a la casilla que queremos, en caso afirmativo actualiza las
+     * coordenadas.
+     * @param filaAnt: fila actual en la que se encuentra la pieza a mover
+     * @param col: columna en la que se encuentra la pieza a mover
+     * @param desplazamiento: cantidad de casillas que la figura se desplaza en caso de poderse 
+     * @return moverse: booleano, true si la pieza puede moverse
+    */
+    public abstract boolean realizarDesplazamiento(int filaAnt,int col,int desplazamiento);
+    
+    /**
     * MoverFigura()
     * Define el movimiento de cada figura
     */
     public abstract void moverFigura();    
+    
+    /**
+    * puedeComer()
+    * Comprueba si la figura puede comerse a otra
+    * @return comer: booleano, true si se puede comer una pieza, false si no.
+    */
+    public abstract boolean[] puedeComer();
     
     /**
     * comerFigura()
@@ -39,7 +56,6 @@ public interface Figuras {
     * Establece el icono de cada pieza
     * @param icono: imagen del paquete ImagenesFiguras que se corresponde con el icono
     */
-    
     public abstract void setIcono(ImageIcon icono);
     
     /**
@@ -47,6 +63,5 @@ public interface Figuras {
     * Establece el color de la pieza (true = blanco, false = negro)
     * @param blanco: booleano; true = blanco, false = negro
     */
-    
-    public abstract void setColor(boolean blanco);
+    public abstract void setColor(int blanco);
 }

@@ -24,8 +24,9 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     
     static JPanel[][] tablero; // La interfaz que muestra el tablero
     int[] coordenadas; // Coordenadas da cada pieza
-    boolean blanco; // Si sonde color blanco o negro
+    int blanco; // 0 si es negro, 1 si es blanco
     Scanner entradaDatos; //Entrada de datos, para el menu acciones
+    
     /**
      * Creates new form Piezas
      * Constructor de la clase piezas
@@ -33,10 +34,35 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     public Piezas() {
         initComponents();
         this.tablero= new JPanel[FILAS][COLUMNAS];
-        this.blanco=true;
+        this.blanco=1;
         this.coordenadas = new int[Piezas.TAM_COORDENADAS];
         this.entradaDatos = new Scanner(System.in);
     }
+    
+    /**
+    * setCoordenadas()
+    * Establece las coordenadas de las piezas
+    * @param fila: fila del tablero en la que se encuentra la pieza
+    * @param columna: columna del tablero en la que se encuentra la pieza
+    */
+    @Override
+    public abstract void setCoordenadas(int fila,int columna);
+    
+    /**
+    * setIcono()
+    * Establece el icono de cada pieza
+    * @param icono: imagen del paquete ImagenesFiguras que se corresponde con el icono
+    */
+    @Override
+    public abstract void setIcono(ImageIcon icono);
+    
+    /**
+    * setColor()
+    * Establece el color de la pieza (true = blanco, false = negro)
+    * @param blanco: booleano; true = blanco, false = negro
+    */
+    @Override
+    public abstract void setColor(int blanco);
     
     /**
     * SetTablero
@@ -44,7 +70,6 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     * Se llama una vez todas las piezas han sido colocadas
     * @param tablero: tablero de ajedrez tras haber añadido todas las piezas
     */
-    
     public static void setTablero(JPanel[][] tablero) {
         Piezas.tablero=tablero;
     }
@@ -55,123 +80,13 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
      * @param filaAnt: fila actual en la que se encuentra la pieza a mover
      * @param col: columna en la que se encuentra la pieza a mover 
      */
-    public abstract void actualizarTablero(int filaAnt,int col);
-    
-    /**
-    * comprobarPieza()
-    * Comprueba si hay una pieza en las coordenadas dadas
-    * @param fila: fila donde hay que comprobar si se halla una pieza
-    * @param columna: columna donde hay que comprobar si se halla una pieza
-    * @return pieza: booleano, true si hay una pieza en la casilla a comprobar, false si no.
-    */
-    boolean comprobarPieza(int fila, int col){
-        boolean pieza=false;
-        if(this.tablero[fila][col].getComponents().length>0){
-            /*System.out.println("NO SE PUEDE MOVER");*/
-            pieza=true;
-        }
-        return pieza;
+    public void actualizarTablero(int filaAnt,int colAnt){
+        int fila=this.coordenadas[0];
+        int col=this.coordenadas[1];
+        tablero[filaAnt][colAnt].remove(this);
+        tablero[filaAnt][colAnt].repaint();
+        tablero[fila][col].add(this);
     }
-    
-    /**
-    * puedeRealizarAccion()
-    * Comprueba si la pieza pieza se sale del tablero al realizar una accion
-    * @param desH: True si la accion desencadena un movimiento horizontal
-    * @param desV: True si la accion desencadena un movimiento vertical
-    * @param disH: numero de casillas que se desplaza en horizontal
-    * @param disV: numero de casillas que se desplaza en vertical
-    * @param realizarAccion: True si se puede mover la figura,False si no.
-    * @return pieza: booleano, true si hay una pieza en la casilla a comprobar, false si no.
-    */
-    public boolean puedeRealizarAccion(boolean desH,boolean desV,int disH,int disV){
-        boolean realizarAccion=true;
-        if(desH){
-            if(coordenadas[1]+disH>(COLUMNAS-1) || coordenadas[1]+disH<0){
-                realizarAccion=false;
-            }
-        }
-        
-        if(desV){
-            if(coordenadas[0]+disV>(FILAS-1) || coordenadas[0]+disV<0){
-                realizarAccion=false;
-            }
-        }
-        return realizarAccion;
-    }
-    /**
-    * puedeComer()
-    * Comprueba si la figura puede comerse a otra
-    * @return comer: booleano, true si se puede comer una pieza, false si no.
-    */
-    public abstract boolean[] puedeComer();
-       
-    /**
-    * escogerDesplazamiento()
-    * Permite escoger el desplazamiento de las piezas
-    * Cuantas casillas avanza
-    */
-    public abstract int escogerDesplazamiento();
-    
-    /**
-     * realizarDesplazamiento()
-     * Comprueba si se puede mover la figura a la casilla que queremos, en caso afirmativo actualiza las
-     * coordenadas.
-     * @param filaAnt: fila actual en la que se encuentra la pieza a mover
-     * @param col: columna en la que se encuentra la pieza a mover
-     * @param desplazamiento: cantidad de casillas que la figura se desplaza en caso de poderse 
-     * @return moverse: booleano, true si la pieza puede moverse
-    */
-    public abstract boolean realizarDesplazamiento(int filaAnt,int col,int desplazamiento);
-    
-    /**
-    * MoverFigura()
-    * Define el movimiento de cada figura
-    */
-    @Override
-    public abstract void moverFigura();
-       
-    /**
-    * comerFigura()
-    * Define la acción de comer una figura
-    */
-    @Override
-    public abstract void comerFigura();
-
-    /**
-    * setCoordenadas()
-    * Establece las coordenadas de las piezas
-    * @param fila: fila del tablero en la que se encuentra la pieza
-    * @param columna: columna del tablero en la que se encuentra la pieza
-    */
-    
-    
-    
-    
-    @Override
-    public abstract void setCoordenadas(int fila,int columna);
-    
-    /**
-    * setIcono()
-    * Establece el icono de cada pieza
-    * @param icono: imagen del paquete ImagenesFiguras que se corresponde con el icono
-    */
-    
-    @Override
-    public abstract void setIcono(ImageIcon icono);
-    
-    /**
-    * setColor()
-    * Establece el color de la pieza (true = blanco, false = negro)
-    * @param blanco: booleano; true = blanco, false = negro
-    */
-    
-    @Override
-    public abstract void setColor(boolean blanco);
-    
-    
-    
-    
-    
     
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
@@ -205,7 +120,7 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     private void iconoFiguraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iconoFiguraActionPerformed
         boolean[] pcomer=this.puedeComer();
         if(pcomer[0] || pcomer[1]){
-            int accion=menuAcciones();
+            int accion=menuOpciones("Ingresa la accion(1 comer o 2 moverse): ",1,2);
             if(accion==1){
                 this.comerFigura();
             }else{
@@ -216,22 +131,104 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
         }
         
     }//GEN-LAST:event_iconoFiguraActionPerformed
+
     
     /**
-    * menuAcciones()()
-    * Cuando pulsamos en la figura, esta se mueve o despliega un menu acerca de como moverse
-    * @param accion: accion que puede hacer la figura : 1 comer, 2 moverse 
+    * puedeComer()
+    * Comprueba si la figura puede comerse a otra
+    * @return comer: booleano, true si se puede comer una pieza, false si no.
     */
-    Integer menuAcciones(){
+    @Override
+    public abstract boolean[] puedeComer();
+    
+    /**
+    * menuOpciones()
+    * Crea un menu, que muestra un numero de opciones a escoger.Ej: menu para escoger accion, movimiento,
+    * que figura comer en caso de poder comer dos más,etc.
+    * @param mAccion: mensaje que describe la accion.
+    * @param nMin: Numero minimo a introducir, representaria la primera opcion
+    * @param nMax: Numero maximo a introducir, representaria la ultima opcion
+    * @return accion: accion que puede hacer la figura : 1 comer, 2 moverse 
+    */
+    public int menuOpciones(String mAccion,int nMin,int nMax){
         int accion=0;
-        while(accion<1 || accion>2){
-            System.out.print("Ingresa la accion(1 comer o 2 moverse): ");
+        while(accion<nMin || accion>nMax){
+            System.out.print(mAccion);
             accion = this.entradaDatos.nextInt();
             System.out.println("Accion escogida: " + accion);
         }
         
         return accion;
     }
+    
+    /**
+    * MoverFigura()
+    * Define el movimiento de cada figura
+    */
+    @Override
+    public abstract void moverFigura();
+       
+    /**
+    * comerFigura()
+    * Define la acción de comer una figura
+    */
+    @Override
+    public abstract void comerFigura();
+
+    /**
+    * comprobarPieza()
+    * Comprueba si hay una pieza en las coordenadas dadas
+    * @param fila: fila donde hay que comprobar si se halla una pieza
+    * @param columna: columna donde hay que comprobar si se halla una pieza
+    * @return pieza: booleano, true si hay una pieza en la casilla a comprobar, false si no.
+    */
+    boolean comprobarPieza(int fila, int col){
+        boolean pieza=false;
+        if(this.tablero[fila][col].getComponents().length>0){
+            /*System.out.println("NO SE PUEDE MOVER");*/
+            pieza=true;
+        }
+        return pieza;
+    }
+    
+    /**
+    * puedeRealizarAccion()
+    * Comprueba si la pieza pieza se sale del tablero al realizar una accion
+    * @param desH: True si la accion desencadena un movimiento horizontal
+    * @param desV: True si la accion desencadena un movimiento vertical
+    * @param disH: numero de casillas que se desplaza en horizontal
+    * @param disV: numero de casillas que se desplaza en vertical
+    * @param realizarAccion: True si se puede mover la figura,False si no.
+    * @return pieza: booleano, true si hay una pieza en la casilla a comprobar, false si no.
+    */
+    public boolean puedeRealizarAccion(boolean desH,boolean desV,int disH,int disV){
+        boolean realizarAccion=true;
+        if(desH){
+            if(coordenadas[1]+disH>(COLUMNAS-1) || coordenadas[1]+disH<0){
+                realizarAccion=false;
+            }   
+        }
+        
+        if(desV){
+            if(coordenadas[0]+disV>(FILAS-1) || coordenadas[0]+disV<0){
+                realizarAccion=false;
+            } 
+        }
+        return realizarAccion;
+    }
+    
+    /**
+     * realizarDesplazamiento()
+     * Comprueba si se puede mover la figura a la casilla que queremos, en caso afirmativo actualiza las
+     * coordenadas.
+     * @param filaAnt: fila actual en la que se encuentra la pieza a mover
+     * @param col: columna en la que se encuentra la pieza a mover
+     * @param desplazamiento: cantidad de casillas que la figura se desplaza en caso de poderse 
+     * @return moverse: booleano, true si la pieza puede moverse
+    */
+    @Override
+    public abstract boolean realizarDesplazamiento(int filaAnt,int col,int desplazamiento);
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     javax.swing.JButton iconoFigura;
     // End of variables declaration//GEN-END:variables

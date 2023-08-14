@@ -5,7 +5,6 @@
 package PiezasAjedrez;
 
 import java.awt.Component;
-import java.util.Scanner;
 import javax.swing.ImageIcon;
 
 /**
@@ -14,35 +13,24 @@ import javax.swing.ImageIcon;
  * Clase que representa la Pieza Peon
  */
 public class Peon extends Piezas{
-    private boolean inicio;
-    Scanner entradaDatos;
-
+    private boolean inicio; //Indica si ese peon se ha movido o no
+    private int[][] desplazamiento; //Controla el desplazamiento de los peones
+    public static final int TAMdesFil = 2;
+    public static final int TAMdesCol = 2;
+     
     /**
     * Creates new form Peon
     * Constructor de la clase Peon
     */
     
     public Peon() {
+        super(); //Inicializacion de los tributos de la clase padre
         this.inicio=true;
-        this.entradaDatos = new Scanner(System.in);
-    }
-    
-    /**
-    * escogerDesplazamiento()
-    * Permite escoger el desplazamiento inicial de los peones
-    * Al inicio los peones pueden avanzar una o dos casillas.
-    * @return desplazamiento: desplazamiento escogido
-    */
-    @Override
-    public int escogerDesplazamiento(){
-        int desplazamiento=0;
-        while(desplazamiento<1 || desplazamiento>2){
-            System.out.print("Ingresa el desplazamiento(1 o 2): ");
-            desplazamiento = this.entradaDatos.nextInt();
-            System.out.println("Desplazamiento escogido: " + desplazamiento);
-        }
-        
-        return desplazamiento;
+        this.desplazamiento=new int[TAMdesFil][TAMdesCol];
+        this.desplazamiento[0][0]=1; //Si la figura es negra y se desplaza una casilla
+        this.desplazamiento[0][1]=2; //Si la figura es negra y se desplaza dos casillas
+        this.desplazamiento[1][0]=-1; //Si la figura es blanca y se desplaza una casilla
+        this.desplazamiento[1][1]=-2; //Si la figura es blanca y se desplaza dos casillas
     }
     
     /**
@@ -51,82 +39,55 @@ public class Peon extends Piezas{
      * coordenadas.
      * @param filaAnt: fila actual en la que se encuentra la pieza a mover
      * @param col: columna en la que se encuentra la pieza a mover
-     * @param desplazamiento: cantidad de casillas que la figura se desplaza en caso de poderse 
+     * @param indxDes: indice del vector desplazamiento que indica el numero de casillas que se desplaza 
      * @return moverse: booleano, true si la pieza puede moverse
     */
-    public boolean realizarDesplazamiento(int filaAnt,int col,int desplazamiento){
+    public boolean realizarDesplazamiento(int filaAnt,int col,int indxDes){
         boolean moverse=false;
-        boolean realizarAccion=true;
-       
-        int fila=filaAnt;
-        if(this.blanco){
-           fila=filaAnt-desplazamiento;
-           realizarAccion=this.puedeRealizarAccion(false,true,0,-desplazamiento);
-        }else{
-           fila=filaAnt+desplazamiento;
-           realizarAccion=this.puedeRealizarAccion(false,true,0,desplazamiento);
+        boolean rAccion=true;
+        
+        boolean hayPiezaPriCas=false;
+        boolean hayPiezaSegCas=false;
+            
+        int desp=this.desplazamiento[blanco][indxDes];
+        int fila=filaAnt+desp;
+        
+        rAccion=this.puedeRealizarAccion(false,true,0,desp);
+        
+        if(rAccion){
+            hayPiezaPriCas=super.comprobarPieza(filaAnt+this.desplazamiento[blanco][0],col);
+            hayPiezaSegCas=super.comprobarPieza(fila,col);
         }
-
-        if(realizarAccion){ 
-            boolean hayPiezaPrimeraCasilla=false;
-            boolean hayPiezaSegundaCasilla=false;
-
-            if(desplazamiento==2){
-                hayPiezaSegundaCasilla=super.comprobarPieza(fila,col);
-                if(this.blanco){
-                    hayPiezaPrimeraCasilla=super.comprobarPieza(filaAnt-1,col);
-                }else{
-                    hayPiezaPrimeraCasilla=super.comprobarPieza(filaAnt+1,col);
-                }
-            }else{
-                hayPiezaPrimeraCasilla=super.comprobarPieza(fila,col);
-            }
-
-            if(hayPiezaPrimeraCasilla || hayPiezaSegundaCasilla){
-                moverse=false;
-            }else{
-              this.coordenadas[0]=fila;
-              moverse=true;
-            }
+        
+        if(hayPiezaPriCas || hayPiezaSegCas){
+            moverse=false;
+        }else{
+            this.coordenadas[0]=fila;
+            moverse=true;
         }
         
         return moverse;
     }
     
     /**
-     * actualizartablero()
-     * Actualiza el tablero tras mover o comer una figura/pieza.
-     * @param filaAnt: fila en la que se encontraba la figura
-     * @param colAnt: columna en la que se encontraba la figura
-     */
-    @Override
-    public void actualizarTablero(int filaAnt,int colAnt){
-        int fila=this.coordenadas[0];
-        int col=this.coordenadas[1];
-        tablero[filaAnt][colAnt].remove(this);
-        tablero[filaAnt][colAnt].repaint();
-        tablero[fila][col].add(this);
-    }
-    /**
     * MoverFigura()
     * Define el movimiento de la figura: Peon
     */
     @Override
     public void moverFigura() {
-       int desplazamiento=1;
-       int filaAnt=this.coordenadas[0];
-       int col=this.coordenadas[1];
-       boolean moverFigura=true;
-       
-       if(this.inicio){
-           desplazamiento=this.escogerDesplazamiento();
-       }
-       moverFigura=this.realizarDesplazamiento(filaAnt,col,desplazamiento);
-       
-       if(moverFigura){
-            actualizarTablero(filaAnt,col);
+        int indxDes=1;
+        int filaAnt=this.coordenadas[0];
+        int colAnt=this.coordenadas[1];
+        boolean moverFigura=true;
+
+        if(this.inicio){
+            indxDes=super.menuOpciones("Nº casillas a desplazar(1,2):",1,2);
+        }
+        moverFigura=this.realizarDesplazamiento(filaAnt,colAnt,indxDes-1); // el indice es 0,1.
+        if(moverFigura){
+            actualizarTablero(filaAnt,colAnt);
             inicio=false;
-       }
+        }
     }
     
     /**
@@ -137,7 +98,10 @@ public class Peon extends Piezas{
     
     @Override
     public boolean[] puedeComer() {
-        int desplazamiento=1;
+        int des=this.desplazamiento[blanco][0];
+        int colIzq=-1;
+        int colDcha=1;
+        
         boolean[] comer=new boolean[Piezas.TAM_COORDENADAS];
         comer[0]=comer[1]=false;
         boolean pComerHIzq=true;
@@ -145,79 +109,52 @@ public class Peon extends Piezas{
         
         int filaAct=this.coordenadas[0];
         int colAct=this.coordenadas[1];
-        int fila=filaAct;
+        int fila=filaAct+des;
         
-        if(this.blanco){
-           fila=filaAct-desplazamiento;
-           pComerHIzq=this.puedeRealizarAccion(true, true, -desplazamiento,-desplazamiento);
-           pComerDcha=this.puedeRealizarAccion(true, true, desplazamiento,-desplazamiento);
-        }else{
-           fila=filaAct+desplazamiento;
-           pComerHIzq=this.puedeRealizarAccion(true, true, -desplazamiento,desplazamiento);
-           pComerDcha=this.puedeRealizarAccion(true, true, desplazamiento,desplazamiento);
+        pComerHIzq=this.puedeRealizarAccion(true, true, colIzq,des);
+        pComerDcha=this.puedeRealizarAccion(true, true, colDcha,des);
+      
+        if(pComerHIzq && super.comprobarPieza(fila,colAct+colIzq)){
+            comer[0]=true;   
         }
-       
-        if(pComerHIzq){
-            if(super.comprobarPieza(fila,colAct-desplazamiento)){
-               comer[0]=true;
-            }
-        } 
         
-        if(pComerDcha){
-            if(super.comprobarPieza(fila,colAct+desplazamiento)){
-               comer[1]=true;
-            }
+        if(pComerDcha && super.comprobarPieza(fila,colAct+colDcha)){
+            comer[1]=true;
         } 
        
        return comer;
     }
     
-    Integer eligeFiguraComer(){
-        int accion=0;
-        while(accion<1 || accion>2){
-            System.out.print("Ingresa la accion(1 comer izq o 2 comer dcha): ");
-            accion = this.entradaDatos.nextInt();
-            System.out.println("Accion escogida: " + accion);
-        }
-        
-        return accion;
-    }
     /**
     * comerFigura()
     * Define la acción de comer una figura, en este caso define como come la figura: Peon
     */
     @Override
     public void comerFigura() {
-       
-        int desplazamiento=1;
+        int des=this.desplazamiento[blanco][0];
+        int colDcha=1;
+        int colIzq=-1;
+        int accion=0;
         boolean[] pcomer=this.puedeComer();
         
         int filaAct=this.coordenadas[0];
         int colAct=this.coordenadas[1];
-        int nFil=filaAct;
+        int nFil=filaAct+des;
         int nCol=colAct;
         
-        if(this.blanco){
-            nFil=filaAct-desplazamiento;
-        }else{
-            nFil=filaAct+desplazamiento;
-        }
-       
         if(pcomer[0] && pcomer[1]){
-            int accion=eligeFiguraComer();
+            accion=super.menuOpciones("Elija figura a comer: izq(1),dcha(2):", 1, 2);
             if(accion==1){
-                nCol=colAct-desplazamiento;
+                nCol=colAct+colIzq;
             }else{
-                nCol=colAct+desplazamiento;
-            }
+                nCol=colAct+colDcha;
+            }  
         }else if(pcomer[0]){
-            nCol=colAct-desplazamiento;
+            nCol=colAct+colIzq;
         }else if(pcomer[1]){
-            nCol=colAct+desplazamiento;
+            nCol=colAct+colDcha;
         }
         
-        
-       
         Component piezaComida=this.tablero[nFil][nCol].getComponent(0);
         tablero[nFil][nCol].remove(piezaComida);
         tablero[nFil][nCol].repaint();
@@ -226,6 +163,7 @@ public class Peon extends Piezas{
         this.coordenadas[1]=nCol;
         this.actualizarTablero(filaAct, colAct);
     }
+    
     
     /**
     * setCoordenadas()
@@ -246,7 +184,7 @@ public class Peon extends Piezas{
     */
     @Override
     public void setIcono(ImageIcon icon){
-        iconoFigura.setIcon(icon);
+        this.iconoFigura.setIcon(icon);
     }
     
      /**
@@ -255,7 +193,7 @@ public class Peon extends Piezas{
     * @param blanco: booleano; true = blanco, false = negro
     */
     @Override
-    public void setColor(boolean blanco){
+    public void setColor(int blanco){
         this.blanco=blanco;
     }
     
