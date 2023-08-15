@@ -4,6 +4,8 @@
  */
 package PiezasAjedrez;
 
+import static PiezasAjedrez.Piezas.tablero;
+import java.awt.Component;
 import javax.swing.ImageIcon;
 
 /**
@@ -84,6 +86,7 @@ public class Torre extends Piezas {
         if(!enc){
             nCasillas=8; //Luego se usa nCasillas-1=7 por eso es 8 y no 7
         }
+        
         return nCasillas;
     }
     
@@ -91,12 +94,12 @@ public class Torre extends Piezas {
     public void moverFigura() {
         int indxDes=-1;
         int filaAct=this.coordenadas[0];
-        int nFila=this.coordenadas[0];
+        int nFil=this.coordenadas[0];
         int colAct=this.coordenadas[1];
         int nCol=this.coordenadas[1];
         int desp=0;
         int nCasillasMax=0;
-        String msgOrientacion=msgOrientacion="Seleccione una orientacion de desplazamiento\n"
+        String msgOrientacion=msgOrientacion="Seleccione la orientacion de desplazamiento\n"
                             + "0: Arriba\n"
                             + "1: Derecha\n"
                             +"2: Abajo\n"
@@ -109,7 +112,7 @@ public class Torre extends Piezas {
         if(moverFigura[0] || moverFigura[1] || moverFigura[2] || moverFigura[3]){
             orientacion=super.menuOpciones(msgOrientacion,0,3);
             if(moverFigura[orientacion]){
-                //Devuelve la casilla donde se halla la figura,  por ello nCasillasMax-1
+                //Devuelve la casilla donde se halla una figura que interfiera,  por ello nCasillasMax-1
                 nCasillasMax=this.calcularCasillasMax(orientacion,this.blanco); 
                 indxDes=super.menuOpciones("Nº casillas a desplazar(1,..,"+(nCasillasMax-1)+"):",1,nCasillasMax-1);
             }else{
@@ -123,16 +126,16 @@ public class Torre extends Piezas {
         if(indxDes>-1){
             desp=this.desplazamiento[0][indxDes-1];
             if(orientacion==0){
-                nFila=filaAct-desp;
+                nFil=filaAct-desp;
             }else if(orientacion==1){
                 nCol=colAct+desp;
             }else if(orientacion==2){
-                nFila=filaAct+desp;
+                nFil=filaAct+desp;
             }else{
                 nCol=colAct-desp;
             }
             
-            this.coordenadas[0]=nFila;
+            this.coordenadas[0]=nFil;
             this.coordenadas[1]=nCol;
             super.actualizarTablero(filaAct,colAct);
            
@@ -141,15 +144,81 @@ public class Torre extends Piezas {
 
     
     @Override
-    public boolean[] puedeComer() {
+    public boolean[] puedeComer(){
+        int color=0;
+        if(this.blanco==0){
+            color=1;
+        }
         boolean[] comer=new boolean[4];
+        int[] figAComer=new int[4];
+        int[] figAmigo=new int[4];
         comer[0]=comer[1]=comer[2]=comer[3]=false; 
+        for(int pos=0;pos<4;pos++){
+            figAComer[pos]=this.calcularCasillasMax(pos,color);
+            figAmigo[pos]=this.calcularCasillasMax(pos,this.blanco);
+            if(figAComer[pos]<8 && figAComer[pos]<figAmigo[pos]){
+                comer[pos]=true;  
+            }
+        }
+        
         return comer;
     }
     
     @Override
     public void comerFigura() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        int filaAct=this.coordenadas[0];
+        int nFil=this.coordenadas[0];
+        int colAct=this.coordenadas[1];
+        int nCol=this.coordenadas[1];
+        int desp=0;
+        int casFigAComer=-1;
+        int color=0;
+        if(this.blanco==0){
+            color=1;
+        }
+        String msgOrientacion=msgOrientacion="Seleccione la orientacion en la que desea comer\n"
+                            + "0: Arriba\n"
+                            + "1: Derecha\n"
+                            +"2: Abajo\n"
+                            +"3: Izquierda: \n"
+                            + "Opcion: ";
+        int orientacion=0;
+                
+        boolean[] comerFigura=this.puedeComer();
+        
+        if(comerFigura[0] || comerFigura[1] || comerFigura[2] || comerFigura[3]){
+            orientacion=super.menuOpciones(msgOrientacion,0,3);
+            if(comerFigura[orientacion]){
+                //Devuelve la casilla donde se halla la figura,  por ello nCasillasMax-1
+                casFigAComer=this.calcularCasillasMax(orientacion,color);
+            }else{
+               System.out.println("La pieza no puede comer en la direccion que desea"); 
+            }
+        }else{
+            System.out.println("La pieza no se puede mover");
+        }
+        
+        
+        if(casFigAComer>-1){
+            desp=this.desplazamiento[0][casFigAComer-1];
+            if(orientacion==0){
+                nFil=filaAct-desp;
+            }else if(orientacion==1){
+                nCol=colAct+desp;
+            }else if(orientacion==2){
+                nFil=filaAct+desp;
+            }else{
+                nCol=colAct-desp;
+            }
+            
+            Component piezaComida=this.tablero[nFil][nCol].getComponent(0);
+            tablero[nFil][nCol].remove(piezaComida);
+            tablero[nFil][nCol].repaint();
+            
+            this.coordenadas[0]=nFil;
+            this.coordenadas[1]=nCol;
+            super.actualizarTablero(filaAct,colAct);
+        }
     }
 
    
