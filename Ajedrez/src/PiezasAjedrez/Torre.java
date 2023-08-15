@@ -50,16 +50,16 @@ public class Torre extends Piezas {
         rAccion[3]=this.puedeRealizarAccion(true,false,-desp,0);
          
         if(rAccion[0]){
-            moverse[0]=!(super.comprobarPiezaColor(filaAct-desp,colAct,this.blanco)); //Figura de arriba
+            moverse[0]=!(super.comprobarPieza(filaAct-desp,colAct)); //Figura de arriba
         }
         if(rAccion[1]){
-            moverse[1]=!(super.comprobarPiezaColor(filaAct,colAct+desp,this.blanco)); //Figura derecha
+            moverse[1]=!(super.comprobarPieza(filaAct,colAct+desp)); //Figura derecha
         }
         if(rAccion[2]){
-            moverse[2]=!(super.comprobarPiezaColor(filaAct+desp,colAct,this.blanco)); //Figura abajo
+            moverse[2]=!(super.comprobarPieza(filaAct+desp,colAct)); //Figura abajo
         } 
         if(rAccion[3]){
-            moverse[3]=!(super.comprobarPiezaColor(filaAct,colAct-desp,this.blanco)); //Figura izquierda
+            moverse[3]=!(super.comprobarPieza(filaAct,colAct-desp)); //Figura izquierda
         }            
         return moverse;
     }
@@ -72,19 +72,45 @@ public class Torre extends Piezas {
         
         boolean enc=false;
         for(int pos=1;pos<nFilsCols && !enc;pos++){ 
-            
-            if((orientacion==0 && this.puedeRealizarAccion(false,true,0,-pos) && super.comprobarPiezaColor(filaAct-pos,colAct,color))||
-               (orientacion==1 && this.puedeRealizarAccion(true,false,pos,0)  && super.comprobarPiezaColor(filaAct,colAct+pos,color))||
-               (orientacion==2 && this.puedeRealizarAccion(false,true,0,pos)  && super.comprobarPiezaColor(filaAct+pos,colAct,color))||
-               (orientacion==3 && this.puedeRealizarAccion(true,false,-pos,0) && super.comprobarPiezaColor(filaAct,colAct-pos,color))
-              ){
-                nCasillas=pos;
-                enc=true;
+            if(orientacion==0 && this.puedeRealizarAccion(false,true,0,-pos)){
+                if(super.comprobarPiezaColor(filaAct-pos,colAct,color)){
+                    //Devuelve la posicion de la figura. Cuando se desplaza, se le resta 1 pues no puedes 
+                    //atravesar la figura
+                    nCasillas=pos; 
+                    enc=true;
+                }else{
+                    //Porque esta devolviendo el numero de casillas libres sin salirse del tablero. 
+                    //Como luego se resta -1, le añadimos +1 ahora.
+                    nCasillas=pos+1; 
+                }
             }
-        }
-        
-        if(!enc){
-            nCasillas=8; //Luego se usa nCasillas-1=7 por eso es 8 y no 7
+            
+            if(orientacion==1 && this.puedeRealizarAccion(true,false,pos,0)){
+                if(super.comprobarPiezaColor(filaAct,colAct+pos,color)){
+                    nCasillas=pos;
+                    enc=true;
+                }else{
+                    nCasillas=pos+1;
+                }
+            }
+            
+            if(orientacion==2 && this.puedeRealizarAccion(false,true,0,pos)){
+                if(super.comprobarPiezaColor(filaAct+pos,colAct,color)){
+                    nCasillas=pos;
+                    enc=true;
+                }else{
+                    nCasillas=pos+1;
+                }
+            }
+            
+            if(orientacion==3 && this.puedeRealizarAccion(true,false,-pos,0)){
+                if(super.comprobarPiezaColor(filaAct,colAct-pos,color)){
+                    nCasillas=pos;
+                    enc=true;
+                }else{
+                    nCasillas=pos+1;
+                }
+            }
         }
         
         return nCasillas;
@@ -113,7 +139,14 @@ public class Torre extends Piezas {
             orientacion=super.menuOpciones(msgOrientacion,0,3);
             if(moverFigura[orientacion]){
                 //Devuelve la casilla donde se halla una figura que interfiera,  por ello nCasillasMax-1
-                nCasillasMax=this.calcularCasillasMax(orientacion,this.blanco); 
+                //Si la figura se mueve, cualquier figura de cualquier color interfiere(nos quedamos con
+                //el menor numero de casillas)
+                if(this.calcularCasillasMax(orientacion,0)<this.calcularCasillasMax(orientacion,1)){
+                     nCasillasMax=this.calcularCasillasMax(orientacion,0); 
+                }else{
+                    nCasillasMax=this.calcularCasillasMax(orientacion,1); 
+                }
+                
                 indxDes=super.menuOpciones("Nº casillas a desplazar(1,..,"+(nCasillasMax-1)+"):",1,nCasillasMax-1);
             }else{
                System.out.println("La pieza no se puede mover en la direccion que desea"); 
