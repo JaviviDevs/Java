@@ -14,15 +14,10 @@ public interface Figuras {
     public int TAM_COORDENADAS = 2;
     
     /**
-     * realizarDesplazamiento()
-     * Comprueba si se puede mover la figura a la casilla que queremos, en caso afirmativo actualiza las
-     * coordenadas.
-     * @param filaAnt: fila actual en la que se encuentra la pieza a mover
-     * @param col: columna en la que se encuentra la pieza a mover
-     * @param desplazamiento: cantidad de casillas que la figura se desplaza en caso de poderse 
-     * @return moverse: booleano, true si la pieza puede moverse
+    * puedeMover()
+    * @return moverse: vector boleano que indica si puede moverse en las diversas direccions
     */
-    public abstract boolean realizarDesplazamiento(int filaAnt,int col,int desplazamiento);
+    public abstract boolean[] puedeMover();
     
     /**
     * MoverFigura()

@@ -119,7 +119,7 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     */
     private void iconoFiguraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iconoFiguraActionPerformed
         boolean[] pcomer=this.puedeComer();
-        if(pcomer[0] || pcomer[1]){
+        if(pcomer[0] || pcomer[1] || pcomer[2] || pcomer[3]){
             int accion=menuOpciones("Ingresa la accion(1 comer o 2 moverse): ",1,2);
             if(accion==1){
                 this.comerFigura();
@@ -132,11 +132,17 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
         
     }//GEN-LAST:event_iconoFiguraActionPerformed
 
+    /**
+    * puedeMover()
+    * @return moverse: vector boleano que indica si puede moverse en las diversas direccions
+    */
+    @Override
+    public abstract boolean[] puedeMover();
     
     /**
     * puedeComer()
     * Comprueba si la figura puede comerse a otra
-    * @return comer: booleano, true si se puede comer una pieza, false si no.
+    * @return comer: vector booleano, indica si puede comer una pieza en las diversas direcciones
     */
     @Override
     public abstract boolean[] puedeComer();
@@ -151,7 +157,7 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     * @return accion: accion que puede hacer la figura : 1 comer, 2 moverse 
     */
     public int menuOpciones(String mAccion,int nMin,int nMax){
-        int accion=0;
+        int accion=-1;
         while(accion<nMin || accion>nMax){
             System.out.print(mAccion);
             accion = this.entradaDatos.nextInt();
@@ -185,10 +191,27 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     boolean comprobarPieza(int fila, int col){
         boolean pieza=false;
         if(this.tablero[fila][col].getComponents().length>0){
-            /*System.out.println("NO SE PUEDE MOVER");*/
             pieza=true;
         }
         return pieza;
+    }
+    
+    /**
+    * comprobarPieza()
+    * Comprueba si hay una pieza en las coordenadas dadas
+    * @param fila: fila donde hay que comprobar si se halla una pieza
+    * @param columna: columna donde hay que comprobar si se halla una pieza
+    * @return pieza: booleano, true si hay una pieza en la casilla a comprobar, false si no.
+    */
+    boolean comprobarPiezaColor(int fila, int col,int color){
+        boolean hayPieza=false;
+        if(this.comprobarPieza(fila,col)){
+            Piezas pieza=(Piezas) this.tablero[fila][col].getComponent(0);
+            if(pieza.blanco==color){
+                hayPieza=true;
+            }  
+        }
+        return hayPieza;
     }
     
     /**
@@ -216,18 +239,6 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
         }
         return realizarAccion;
     }
-    
-    /**
-     * realizarDesplazamiento()
-     * Comprueba si se puede mover la figura a la casilla que queremos, en caso afirmativo actualiza las
-     * coordenadas.
-     * @param filaAnt: fila actual en la que se encuentra la pieza a mover
-     * @param col: columna en la que se encuentra la pieza a mover
-     * @param desplazamiento: cantidad de casillas que la figura se desplaza en caso de poderse 
-     * @return moverse: booleano, true si la pieza puede moverse
-    */
-    @Override
-    public abstract boolean realizarDesplazamiento(int filaAnt,int col,int desplazamiento);
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     javax.swing.JButton iconoFigura;

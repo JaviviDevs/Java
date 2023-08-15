@@ -15,8 +15,8 @@ import javax.swing.ImageIcon;
 public class Peon extends Piezas{
     private boolean inicio; //Indica si ese peon se ha movido o no
     private int[][] desplazamiento; //Controla el desplazamiento de los peones
-    public static final int TAMdesFil = 2;
-    public static final int TAMdesCol = 2;
+    private final int TAMdesFil = 2;
+    private final int TAMdesCol = 2;
      
     /**
     * Creates new form Peon
@@ -34,36 +34,26 @@ public class Peon extends Piezas{
     }
     
     /**
-     * realizarDesplazamiento()
-     * Comprueba si se puede mover la figura a la casilla que queremos, en caso afirmativo actualiza las
-     * coordenadas.
-     * @param filaAnt: fila actual en la que se encuentra la pieza a mover
-     * @param col: columna en la que se encuentra la pieza a mover
-     * @param indxDes: indice del vector desplazamiento que indica el numero de casillas que se desplaza 
-     * @return moverse: booleano, true si la pieza puede moverse
+    * puedeMover()
+    * @return moverse: vector boleano que indica si puede moverse en las diversas direccions,aunque en el caso
+    * del peon solo indicara si se puede una o dos casillas.
     */
-    public boolean realizarDesplazamiento(int filaAnt,int col,int indxDes){
-        boolean moverse=false;
+    @Override
+    public boolean[] puedeMover(){
+        boolean[] moverse=new boolean[2];
+        moverse[0]=false;
         boolean rAccion=true;
         
-        boolean hayPiezaPriCas=false;
-        boolean hayPiezaSegCas=false;
-            
-        int desp=this.desplazamiento[blanco][indxDes];
-        int fila=filaAnt+desp;
+        int filaAct=this.coordenadas[0];
+        int colAct=this.coordenadas[1];
+        int desp=this.desplazamiento[blanco][1]; //Comprobar para las dos casillas delanteras
+        int fila=filaAct+desp;
         
         rAccion=this.puedeRealizarAccion(false,true,0,desp);
         
         if(rAccion){
-            hayPiezaPriCas=super.comprobarPieza(filaAnt+this.desplazamiento[blanco][0],col);
-            hayPiezaSegCas=super.comprobarPieza(fila,col);
-        }
-        
-        if(hayPiezaPriCas || hayPiezaSegCas){
-            moverse=false;
-        }else{
-            this.coordenadas[0]=fila;
-            moverse=true;
+            moverse[0]=!(super.comprobarPieza(filaAct+this.desplazamiento[blanco][0],colAct));
+            moverse[1]=!(super.comprobarPieza(fila,colAct));
         }
         
         return moverse;
@@ -76,17 +66,25 @@ public class Peon extends Piezas{
     @Override
     public void moverFigura() {
         int indxDes=1;
-        int filaAnt=this.coordenadas[0];
-        int colAnt=this.coordenadas[1];
-        boolean moverFigura=true;
+        int filaAct=this.coordenadas[0];
+        int nFila=this.coordenadas[0];
+        int colAct=this.coordenadas[1];
+        int desp=0;
+        boolean[] moverFigura=this.puedeMover();
 
         if(this.inicio){
             indxDes=super.menuOpciones("Nº casillas a desplazar(1,2):",1,2);
         }
-        moverFigura=this.realizarDesplazamiento(filaAnt,colAnt,indxDes-1); // el indice es 0,1.
-        if(moverFigura){
-            actualizarTablero(filaAnt,colAnt);
+        
+        if(moverFigura[0] || moverFigura[1]){
+            desp=this.desplazamiento[blanco][indxDes-1];
+            nFila=filaAct+desp;
+            this.coordenadas[0]=nFila;
+            
+            super.actualizarTablero(filaAct,colAct);
             inicio=false;
+        }else{
+            System.out.println("La pieza no se puede mover");
         }
     }
     
@@ -102,8 +100,11 @@ public class Peon extends Piezas{
         int colIzq=-1;
         int colDcha=1;
         
-        boolean[] comer=new boolean[Piezas.TAM_COORDENADAS];
-        comer[0]=comer[1]=false;
+        boolean[] comer=new boolean[4];
+        //En este caso la posicion 2 y 3 seran false, pues solo necesito saber si se puede
+        //comer hacia la izq o dcha, pero para otras figuras necesito que tenga ese tamaño.
+        // porque se usa en la clase padre
+        comer[0]=comer[1]=comer[2]=comer[3]=false; 
         boolean pComerHIzq=true;
         boolean pComerDcha=true;
         
@@ -114,11 +115,16 @@ public class Peon extends Piezas{
         pComerHIzq=this.puedeRealizarAccion(true, true, colIzq,des);
         pComerDcha=this.puedeRealizarAccion(true, true, colDcha,des);
       
-        if(pComerHIzq && super.comprobarPieza(fila,colAct+colIzq)){
+        int color=0;
+        if(this.blanco==0){
+            color=1;
+        }
+        
+        if(pComerHIzq && super.comprobarPiezaColor(fila,colAct+colIzq,color)){
             comer[0]=true;   
         }
         
-        if(pComerDcha && super.comprobarPieza(fila,colAct+colDcha)){
+        if(pComerDcha && super.comprobarPiezaColor(fila,colAct+colDcha,color)){
             comer[1]=true;
         } 
        
@@ -161,7 +167,7 @@ public class Peon extends Piezas{
 
         this.coordenadas[0]=nFil;
         this.coordenadas[1]=nCol;
-        this.actualizarTablero(filaAct, colAct);
+        super.actualizarTablero(filaAct, colAct);
     }
     
     
