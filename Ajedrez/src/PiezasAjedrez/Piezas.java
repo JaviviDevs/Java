@@ -26,6 +26,9 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     int[] coordenadas; // Coordenadas da cada pieza
     int blanco; // 0 si es negro, 1 si es blanco
     Scanner entradaDatos; //Entrada de datos, para el menu acciones
+    public int[] mover; //Almacena el numero de casillas que la figura puede avanzar en las direntes orientaciones
+    public int[] comer; //Almacena el numero de casillas donde se hallan las figuras que puede comer en las diferentes direeciones
+    final int ORIENTACIONES = 4;
     
     /**
      * Creates new form Piezas
@@ -36,7 +39,20 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
         this.tablero= new JPanel[FILAS][COLUMNAS];
         this.blanco=1;
         this.coordenadas = new int[Piezas.TAM_COORDENADAS];
+        this.mover=new int[ORIENTACIONES];
+        this.comer=new int[ORIENTACIONES];
         this.entradaDatos = new Scanner(System.in);
+    }
+    
+    /**
+     *iniMoverComer()
+     * Iniciliza los vectores mover y comer a 0
+     */
+    public void iniMoverComer(){
+        for(int indx=0;indx<ORIENTACIONES;indx++){
+            this.mover[indx]=0;
+            this.comer[indx]=0;
+        }
     }
     
     /**
@@ -118,8 +134,8 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     * @param evt: evento que surge de clicar el boton de la pieza.
     */
     private void iconoFiguraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iconoFiguraActionPerformed
-        boolean[] pcomer=this.puedeComer();
-        if(pcomer[0] || pcomer[1] || pcomer[2] || pcomer[3]){
+        int[] comer=calcCasComer();
+        if(comer[0]>0 || comer[1]>0 || comer[2]>0 || comer[3]>0){
             int accion=menuOpciones("Ingresa la accion(1 comer o 2 moverse): ",1,2);
             if(accion==1){
                 this.comerFigura();
@@ -131,23 +147,7 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
         }
         
     }//GEN-LAST:event_iconoFiguraActionPerformed
-
-    /**
-    * puedeMover()
-    * @return moverse: vector boleano que indica si puede moverse en las diversas direccions
-    */
-    @Override
-    public abstract boolean[] puedeMover();
-    
-    /**
-    * puedeComer()
-    * Comprueba si la figura puede comerse a otra
-    * @return comer: vector booleano, indica si puede comer una pieza en las diversas direcciones
-    */
-    @Override
-    public abstract boolean[] puedeComer();
-    
-    /**
+     /**
     * menuOpciones()
     * Crea un menu, que muestra un numero de opciones a escoger.Ej: menu para escoger accion, movimiento,
     * que figura comer en caso de poder comer dos más,etc.
@@ -166,6 +166,30 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
         
         return accion;
     }
+    
+    /**
+     * calcCasDisp()
+     * Calcula el numero de casillas disponibles para moverse en las distintas
+     * direcciones teniendo en cuenta las piezas de un solo color.
+     */
+    public abstract int[] calcCasDisp(int color);
+    
+    /**
+    * calcCasMover()
+    * Calcula en cada direccion el numero de casillas máximas disponibles para moverse
+    * @return mover: vector int que contiene las casillas disponibles a las que moverse
+    */
+    @Override
+    public abstract int[] calcCasMover();
+    
+    /**
+    * calcCasComer()
+    * Calcula en cada direccion el numero de casillas necesarias para comer la figura (si la encuentra)
+    * @return comer: vector int que contiene las casillas necesarias para comer las figuras
+    */
+    @Override
+    public abstract int[] calcCasComer();
+    
     
     /**
     * MoverFigura()
@@ -215,29 +239,20 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     }
     
     /**
-    * puedeRealizarAccion()
-    * Comprueba si la pieza pieza se sale del tablero al realizar una accion
-    * @param desH: True si la accion desencadena un movimiento horizontal
-    * @param desV: True si la accion desencadena un movimiento vertical
-    * @param disH: numero de casillas que se desplaza en horizontal
-    * @param disV: numero de casillas que se desplaza en vertical
-    * @param realizarAccion: True si se puede mover la figura,False si no.
-    * @return pieza: booleano, true si hay una pieza en la casilla a comprobar, false si no.
-    */
-    public boolean puedeRealizarAccion(boolean desH,boolean desV,int disH,int disV){
-        boolean realizarAccion=true;
-        if(desH){
-            if(coordenadas[1]+disH>(COLUMNAS-1) || coordenadas[1]+disH<0){
-                realizarAccion=false;
-            }   
-        }
-        
-        if(desV){
-            if(coordenadas[0]+disV>(FILAS-1) || coordenadas[0]+disV<0){
-                realizarAccion=false;
-            } 
-        }
-        return realizarAccion;
+     * salirseTablero
+     * Detecta si una figura se va salir del tablero
+     * @param disH: numeros de casillas horizontales que se desplazaría la figura.
+     * @param disV: numeros de casillas verticales que se desplazaría la figura
+     */
+    public boolean salirseTablero(int disH,int disV){
+        boolean salir=false;
+        if(coordenadas[1]+disH>(COLUMNAS-1) || coordenadas[1]+disH<0){
+            salir=true;
+        } 
+        if(coordenadas[0]+disV>(FILAS-1) || coordenadas[0]+disV<0){
+            salir=true;
+        }    
+        return salir;
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

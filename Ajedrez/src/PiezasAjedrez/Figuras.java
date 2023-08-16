@@ -14,10 +14,11 @@ public interface Figuras {
     public int TAM_COORDENADAS = 2;
     
     /**
-    * puedeMover()
-    * @return moverse: vector boleano que indica si puede moverse en las diversas direccions
+    * calcCasMover()
+    * Calcula en cada direccion el numero de casillas máximas disponibles para moverse
+    * @return mover: vector int que contiene las casillas disponibles a las que moverse
     */
-    public abstract boolean[] puedeMover();
+    public abstract int[] calcCasMover();
     
     /**
     * MoverFigura()
@@ -26,11 +27,11 @@ public interface Figuras {
     public abstract void moverFigura();    
     
     /**
-    * puedeComer()
-    * Comprueba si la figura puede comerse a otra
-    * @return comer: booleano, true si se puede comer una pieza, false si no.
+    * calcCasComer()
+    * Calcula en cada direccion el numero de casillas necesarias para comer la figura (si la encuentra)
+    * @return comer: vector int que contiene las casillas necesarias para comer las figuras
     */
-    public abstract boolean[] puedeComer();
+    public abstract int[] calcCasComer();
     
     /**
     * comerFigura()

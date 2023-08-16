@@ -34,29 +34,78 @@ public class Peon extends Piezas{
     }
     
     /**
-    * puedeMover()
-    * @return moverse: vector boleano que indica si puede moverse en las diversas direccions,aunque en el caso
-    * del peon solo indicara si se puede una o dos casillas.
-    */
+     * calcCasDisp()
+     * Calcula el numero de casillas disponibles para moverse en las distintas
+     * direcciones teniendo en cuenta las piezas de un solo color.
+     */
     @Override
-    public boolean[] puedeMover(){
-        boolean[] moverse=new boolean[2];
-        moverse[0]=false;
-        boolean rAccion=true;
-        
+    public int[] calcCasDisp(int color){
+        int[] nCasillas=new int[1];
+        nCasillas[0]=2;
+        int nFigs=3;
         int filaAct=this.coordenadas[0];
         int colAct=this.coordenadas[1];
-        int desp=this.desplazamiento[blanco][1]; //Comprobar para las dos casillas delanteras
-        int fila=filaAct+desp;
+        boolean salirBucle=false;
         
-        rAccion=this.puedeRealizarAccion(false,true,0,desp);
+        for(int pos=1;pos<nFigs && !salirBucle;pos++){
+            if(!super.salirseTablero(0, this.desplazamiento[this.blanco][pos-1])){
+                if(super.comprobarPiezaColor(filaAct+this.desplazamiento[this.blanco][pos-1],colAct,color)){
+                    nCasillas[0]=pos-1; //Almacenamos la posicion de la pieza
+                    salirBucle=true;
+                } 
+            }else{
+                nCasillas[0]=pos-1;
+                salirBucle=true;
+            }
+        } 
+         
+        return nCasillas;
+    }
+    
+    /**
+    * calcCasMover()
+    * Calcula en cada direccion el numero de casillas máximas disponibles para moverse
+    * @return mover: vector int que contiene las casillas disponibles a las que moverse
+    */
+    @Override
+    public int[] calcCasMover(){
+        int[] distFigBlancas=this.calcCasDisp(1);
+        int[] distFigNegras=this.calcCasDisp(0);
         
-        if(rAccion){
-            moverse[0]=!(super.comprobarPieza(filaAct+this.desplazamiento[blanco][0],colAct));
-            moverse[1]=!(super.comprobarPieza(fila,colAct));
+        if(distFigBlancas[0]<distFigNegras[0]){
+            this.mover[0]=distFigBlancas[0];
+        }else{
+            this.mover[0]=distFigNegras[0];
+        } 
+        return this.mover;
+    }
+    
+    /**
+    * calcCasComer()
+    * Calcula en cada direccion el numero de casillas necesarias para comer la figura (si la encuentra)
+    * @return comer: vector int que contiene las casillas necesarias para comer las figuras
+    */
+    @Override
+    public int[] calcCasComer(){
+        int filaAct=this.coordenadas[0];
+        int colAct=this.coordenadas[1];
+        int color=0;
+        if(this.blanco==0){
+            color=1;
         }
+        int dist=this.desplazamiento[this.blanco][0];
         
-        return moverse;
+        if(!super.salirseTablero(-1, dist) && super.comprobarPiezaColor(filaAct+dist,colAct-1,color)){
+            this.comer[0]=1;
+        }else{
+            this.comer[0]=0;
+        }
+        if(!super.salirseTablero(1, dist) && super.comprobarPiezaColor(filaAct+dist,colAct+1,color)){
+            this.comer[1]=1;
+        }else{
+            this.comer[1]=0;
+        }
+        return this.comer;
     }
     
     /**
@@ -70,13 +119,12 @@ public class Peon extends Piezas{
         int nFila=this.coordenadas[0];
         int colAct=this.coordenadas[1];
         int desp=0;
-        boolean[] moverFigura=this.puedeMover();
 
         if(this.inicio){
             indxDes=super.menuOpciones("Nº casillas a desplazar(1,2):",1,2);
         }
-        
-        if(moverFigura[0] || moverFigura[1]){
+        this.mover=this.calcCasMover();
+        if(this.mover[0]>=indxDes){
             desp=this.desplazamiento[blanco][indxDes-1];
             nFila=filaAct+desp;
             this.coordenadas[0]=nFila;
@@ -88,49 +136,8 @@ public class Peon extends Piezas{
         }
     }
     
-    /**
-    * puedeComer()
-    * Comprueba si la figura puede comerse a otra
-    * @return comer: booleano, true si se puede comer una pieza, false si no.
-    */
-    
-    @Override
-    public boolean[] puedeComer() {
-        int des=this.desplazamiento[blanco][0];
-        int colIzq=-1;
-        int colDcha=1;
-        
-        boolean[] comer=new boolean[4];
-        //En este caso la posicion 2 y 3 seran false, pues solo necesito saber si se puede
-        //comer hacia la izq o dcha, pero para otras figuras necesito que tenga ese tamaño.
-        // porque se usa en la clase padre
-        comer[0]=comer[1]=comer[2]=comer[3]=false; 
-        boolean pComerHIzq=true;
-        boolean pComerDcha=true;
-        
-        int filaAct=this.coordenadas[0];
-        int colAct=this.coordenadas[1];
-        int fila=filaAct+des;
-        
-        pComerHIzq=this.puedeRealizarAccion(true, true, colIzq,des);
-        pComerDcha=this.puedeRealizarAccion(true, true, colDcha,des);
-      
-        int color=0;
-        if(this.blanco==0){
-            color=1;
-        }
-        
-        if(pComerHIzq && super.comprobarPiezaColor(fila,colAct+colIzq,color)){
-            comer[0]=true;   
-        }
-        
-        if(pComerDcha && super.comprobarPiezaColor(fila,colAct+colDcha,color)){
-            comer[1]=true;
-        } 
-       
-       return comer;
-    }
-    
+  
+     
     /**
     * comerFigura()
     * Define la acción de comer una figura, en este caso define como come la figura: Peon
@@ -141,23 +148,22 @@ public class Peon extends Piezas{
         int colDcha=1;
         int colIzq=-1;
         int accion=0;
-        boolean[] pcomer=this.puedeComer();
         
         int filaAct=this.coordenadas[0];
         int colAct=this.coordenadas[1];
         int nFil=filaAct+des;
         int nCol=colAct;
-        
-        if(pcomer[0] && pcomer[1]){
+        this.comer=this.calcCasComer();
+        if(this.comer[0]>0 && this.comer[1]>0){
             accion=super.menuOpciones("Elija figura a comer: izq(1),dcha(2):", 1, 2);
             if(accion==1){
                 nCol=colAct+colIzq;
             }else{
                 nCol=colAct+colDcha;
             }  
-        }else if(pcomer[0]){
+        }else if(this.comer[0]>0){
             nCol=colAct+colIzq;
-        }else if(pcomer[1]){
+        }else if(this.comer[1]>0){
             nCol=colAct+colDcha;
         }
         
