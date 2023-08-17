@@ -6,6 +6,7 @@ package ajedrez;
 
 import PiezasAjedrez.Peon;
 import PiezasAjedrez.Piezas;
+import PiezasAjedrez.Reina;
 import PiezasAjedrez.Rey;
 import PiezasAjedrez.Torre;
 import java.awt.Color;
@@ -76,6 +77,12 @@ public class Tablero extends javax.swing.JPanel {
         InicializarRey(0,iconReyNegro);
         InicializarRey(7,iconReyBlanco);
         
+        ImageIcon iconReinaBlanca=new ImageIcon(getClass().getResource("/ImagenesFiguras/reinaBlanca.png"));
+        ImageIcon iconReinaNegra=new ImageIcon(getClass().getResource("/ImagenesFiguras/reinaNegra.png"));
+        
+        InicializarReina(0,iconReinaNegra);
+        InicializarReina(7,iconReinaBlanca);
+        
         Piezas.setTablero(Tablero.tablero);
     }
     
@@ -139,6 +146,26 @@ public class Tablero extends javax.swing.JPanel {
         
         Rey.setCoordenadas(fila, 4);
         tablero[fila][4].add(Rey);
+        
+    }
+    
+    /**
+     * InicializarReina
+     * Inicializa los reyes
+     * @param fila: fila de las torres(0 torres negras, 7 torres blancas)
+     * @param icon: icono de las torres(0 torres negras, 7 torres blancas)
+     */
+    private void InicializarReina(int fila,ImageIcon icon){
+        Piezas Reina=new Reina();
+        
+        Reina.setIcono(icon);
+       
+        if(fila==0){
+            Reina.setColor(0);
+        }
+        
+        Reina.setCoordenadas(fila, 3);
+        tablero[fila][3].add(Reina);
         
     }
     
