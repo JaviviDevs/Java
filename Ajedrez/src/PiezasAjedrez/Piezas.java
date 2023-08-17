@@ -28,7 +28,7 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     Scanner entradaDatos; //Entrada de datos, para el menu acciones
     public int[] mover; //Almacena el numero de casillas que la figura puede avanzar en las direntes orientaciones
     public int[] comer; //Almacena el numero de casillas donde se hallan las figuras que puede comer en las diferentes direeciones
-    final int ORIENTACIONES = 4;
+    final int ORIENTACIONES = 8;
     
     /**
      * Creates new form Piezas
@@ -57,28 +57,35 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     
     /**
     * setCoordenadas()
-    * Establece las coordenadas de las piezas
+    * Establece las coordenadas de las piezas: Peon
     * @param fila: fila del tablero en la que se encuentra la pieza
     * @param columna: columna del tablero en la que se encuentra la pieza
     */
     @Override
-    public abstract void setCoordenadas(int fila,int columna);
+    public void setCoordenadas(int fila,int columna){
+        this.coordenadas[0]=fila;
+        this.coordenadas[1]=columna;
+    }
     
     /**
     * setIcono()
-    * Establece el icono de cada pieza
+    * Establece el icono de cada pieza: Peon
     * @param icono: imagen del paquete ImagenesFiguras que se corresponde con el icono
     */
     @Override
-    public abstract void setIcono(ImageIcon icono);
+    public void setIcono(ImageIcon icon){
+        this.iconoFigura.setIcon(icon);
+    }
     
-    /**
+     /**
     * setColor()
-    * Establece el color de la pieza (true = blanco, false = negro)
+    * Establece el color de la pieza: Peon 
     * @param blanco: booleano; true = blanco, false = negro
     */
     @Override
-    public abstract void setColor(int blanco);
+    public void setColor(int blanco){
+        this.blanco=blanco;
+    }
     
     /**
     * SetTablero
@@ -135,7 +142,14 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
     */
     private void iconoFiguraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iconoFiguraActionPerformed
         int[] comer=calcCasComer();
-        if(comer[0]>0 || comer[1]>0 || comer[2]>0 || comer[3]>0){
+        boolean pcomer=false;
+        for(int orientacion=0;orientacion<ORIENTACIONES;orientacion++){
+            if(comer[orientacion]>0){
+                pcomer=true;
+            }
+        }
+        
+        if(pcomer){
             int accion=menuOpciones("Ingresa la accion(1 comer o 2 moverse): ",1,2);
             if(accion==1){
                 this.comerFigura();
@@ -255,6 +269,73 @@ public abstract class Piezas extends javax.swing.JPanel implements Figuras{
         return salir;
     }
     
+    /**
+     * setNCasillas()
+     * Establece para una orientacion el número de casillas disponibles a moverse, si encuentra una figura o se
+     * sale de tablero, almacena la posicion anterior. Sino se queda el valor por defecto de nCasillas que es 
+     * el número máximo que se puede desplazar la figura.
+     * @param nCasillas: vector que almacena las casillas disponibles
+     * @param orientacion: orientacion del desplazamiento a calcular
+     * @param disH: número de casillas que se desplaza en horizontal
+     * @param disV: número de casillas que se desplaza en vertical
+     * @param fil: fila donde se comprueba si hay una figura
+     * @param col: columna donde se comprueba si hay una figura
+     * @param color: color de la figura a buscar
+     * @param pos: desplazamiento en esa orientacion.
+     */
+    public boolean setNCasillas(int[] nCasillas,int orientacion,int disH,int disV,int fil,int col,int color,int pos){
+        boolean salir=false;
+        if(!salirseTablero(disH, disV)){
+            if(comprobarPiezaColor(fil,col,color)){
+                nCasillas[orientacion]=pos-1; //Almacenamos la posicion de la pieza
+                salir=true;
+            }
+        }else{
+            nCasillas[orientacion]=pos-1; //Almacenamos la posicion de la pieza
+            salir=true;
+        }
+        return salir;
+    }
+    
+    /**
+     * actCoordenadasTrasAccion()
+     * Dependiendo de la orientacion actualiza las coordenadas de la figura tras una accion (mover o comer)
+     * @param orientacion: orientacion del desplazamiento (0:N,1:E,2:O,3:S,4:NE,5:SE,6:S0,7:NO)
+     * @param dist: numero de casillas que se desplaza
+     * @return nCoordenas: coordenadas nuevas de la figura
+     */
+    public int[] actCoordenadasTrasAccion(int orientacion,int dist){
+        int[] nCoordenadas=new int[Piezas.TAM_COORDENADAS];
+        int filaAct=this.coordenadas[0];
+        int colAct=this.coordenadas[1];
+        
+        if(orientacion==0){
+                nCoordenadas[0]=filaAct-dist;
+                nCoordenadas[1]=colAct;
+            }else if(orientacion==1){
+                nCoordenadas[0]=filaAct;
+                nCoordenadas[1]=colAct+dist;
+            }else if(orientacion==2){
+                nCoordenadas[0]=filaAct+dist;
+                nCoordenadas[1]=colAct;
+            }else if(orientacion==3){
+                nCoordenadas[0]=filaAct;
+                nCoordenadas[1]=colAct-dist;
+            }else if(orientacion==4){
+                nCoordenadas[0]=filaAct-dist;
+                nCoordenadas[1]=colAct+dist;
+            }else if(orientacion==5){
+                nCoordenadas[0]=filaAct+dist;
+                nCoordenadas[1]=colAct+dist;
+            }else if(orientacion==6){
+                nCoordenadas[0]=filaAct+dist;
+                nCoordenadas[1]=colAct-dist;
+            }else if(orientacion==7){
+                nCoordenadas[0]=filaAct-dist;
+                nCoordenadas[1]=colAct-dist;
+            }
+        return nCoordenadas;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     javax.swing.JButton iconoFigura;
     // End of variables declaration//GEN-END:variables

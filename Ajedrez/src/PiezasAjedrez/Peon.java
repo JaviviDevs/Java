@@ -33,6 +33,7 @@ public class Peon extends Piezas{
         this.desplazamiento[1][1]=-2; //Si la figura es blanca y se desplaza dos casillas
     }
     
+    
     /**
      * calcCasDisp()
      * Calcula el numero de casillas disponibles para moverse en las distintas
@@ -48,15 +49,8 @@ public class Peon extends Piezas{
         boolean salirBucle=false;
         
         for(int pos=1;pos<nFigs && !salirBucle;pos++){
-            if(!super.salirseTablero(0, this.desplazamiento[this.blanco][pos-1])){
-                if(super.comprobarPiezaColor(filaAct+this.desplazamiento[this.blanco][pos-1],colAct,color)){
-                    nCasillas[0]=pos-1; //Almacenamos la posicion de la pieza
-                    salirBucle=true;
-                } 
-            }else{
-                nCasillas[0]=pos-1;
-                salirBucle=true;
-            }
+            salirBucle=super.setNCasillas(nCasillas,0,0,this.desplazamiento[this.blanco][pos-1],
+                    filaAct+this.desplazamiento[this.blanco][pos-1],colAct,color,pos);
         } 
          
         return nCasillas;
@@ -176,37 +170,5 @@ public class Peon extends Piezas{
         super.actualizarTablero(filaAct, colAct);
     }
     
-    
-    /**
-    * setCoordenadas()
-    * Establece las coordenadas de las piezas: Peon
-    * @param fila: fila del tablero en la que se encuentra la pieza
-    * @param columna: columna del tablero en la que se encuentra la pieza
-    */
-    @Override
-    public void setCoordenadas(int fila,int columna){
-        this.coordenadas[0]=fila;
-        this.coordenadas[1]=columna;
-    }
-    
-    /**
-    * setIcono()
-    * Establece el icono de cada pieza: Peon
-    * @param icono: imagen del paquete ImagenesFiguras que se corresponde con el icono
-    */
-    @Override
-    public void setIcono(ImageIcon icon){
-        this.iconoFigura.setIcon(icon);
-    }
-    
-     /**
-    * setColor()
-    * Establece el color de la pieza: Peon 
-    * @param blanco: booleano; true = blanco, false = negro
-    */
-    @Override
-    public void setColor(int blanco){
-        this.blanco=blanco;
-    }
     
 }
