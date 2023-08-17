@@ -4,6 +4,7 @@
  */
 package ajedrez;
 
+import PiezasAjedrez.Alfil;
 import PiezasAjedrez.Peon;
 import PiezasAjedrez.Piezas;
 import PiezasAjedrez.Reina;
@@ -83,6 +84,12 @@ public class Tablero extends javax.swing.JPanel {
         InicializarReina(0,iconReinaNegra);
         InicializarReina(7,iconReinaBlanca);
         
+        ImageIcon iconAlfilBlanco=new ImageIcon(getClass().getResource("/ImagenesFiguras/alfilBlanco.png"));
+        ImageIcon iconAlfilNegro=new ImageIcon(getClass().getResource("/ImagenesFiguras/alfilNegro.png"));
+        
+        InicializarAlfiles(0,iconAlfilNegro);
+        InicializarAlfiles(7,iconAlfilBlanco);
+        
         Piezas.setTablero(Tablero.tablero);
     }
     
@@ -125,15 +132,38 @@ public class Tablero extends javax.swing.JPanel {
         TorreIzq.setCoordenadas(fila, 0);
         TorreDcha.setCoordenadas(fila,COLUMNAS-1);
         tablero[fila][0].add(TorreIzq);
-        tablero[fila][COLUMNAS-1].add(TorreDcha);
+        tablero[fila][COLUMNAS-1].add(TorreDcha);    
+    }
+    /**
+     * InicializarAlfiles
+     * Inicializa los alfiles
+     * @param fila: fila de los alfiles
+     * @param icon: icono de los alfiles
+     */
+    
+    private void InicializarAlfiles(int fila,ImageIcon icon){
+        Piezas AlfilIzq=new Alfil();
+        Piezas AlfilDcha=new Alfil();
         
+        AlfilIzq.setIcono(icon);
+        AlfilDcha.setIcono(icon);
+        
+        if(fila==0){
+            AlfilIzq.setColor(0);
+            AlfilDcha.setColor(0);
+        }
+        
+        AlfilIzq.setCoordenadas(fila, 2);
+        AlfilDcha.setCoordenadas(fila,COLUMNAS-3);
+        tablero[fila][2].add(AlfilIzq);
+        tablero[fila][COLUMNAS-3].add(AlfilDcha);    
     }
     
     /**
      * InicializarRey
      * Inicializa los reyes
-     * @param fila: fila de las torres(0 torres negras, 7 torres blancas)
-     * @param icon: icono de las torres(0 torres negras, 7 torres blancas)
+     * @param fila: fila de los reyes
+     * @param icon: icono de los reyes
      */
     private void InicializarRey(int fila,ImageIcon icon){
         Piezas Rey=new Rey();
@@ -152,8 +182,8 @@ public class Tablero extends javax.swing.JPanel {
     /**
      * InicializarReina
      * Inicializa los reyes
-     * @param fila: fila de las torres(0 torres negras, 7 torres blancas)
-     * @param icon: icono de las torres(0 torres negras, 7 torres blancas)
+     * @param fila: fila de las reinas
+     * @param icon: icono de las reinas
      */
     private void InicializarReina(int fila,ImageIcon icon){
         Piezas Reina=new Reina();
