@@ -38,6 +38,8 @@ public class Peon extends Piezas{
      * calcCasDisp()
      * Calcula el numero de casillas disponibles para moverse en las distintas
      * direcciones teniendo en cuenta las piezas de un solo color.
+     * @param color: color de las figuras que intenta buscar
+     * @return nCasillas: numero de casillas que puede desplazarse en cada direccion
      */
     @Override
     public int[] calcCasDisp(int color){
@@ -147,7 +149,7 @@ public class Peon extends Piezas{
         int colAct=this.coordenadas[1];
         int nFil=filaAct+des;
         int nCol=colAct;
-        this.comer=this.calcCasComer();
+        //this.comer=this.calcCasComer();
         if(this.comer[0]>0 && this.comer[1]>0){
             accion=super.menuOpciones("Elija figura a comer: izq(1),dcha(2):", 1, 2);
             if(accion==1){

@@ -17,10 +17,13 @@ public class Rey extends Piezas{
     public Rey(){
         super();
     }
+    
     /**
      * calcCasDisp()
      * Calcula el numero de casillas disponibles para moverse en las distintas
      * direcciones teniendo en cuenta las piezas de un solo color.
+     * @param color: color de las figuras que intenta buscar
+     * @return nCasillas: numero de casillas que puede desplazarse en cada direccion
      */
     @Override
     public int[] calcCasDisp(int color) {
@@ -124,7 +127,7 @@ public class Rey extends Piezas{
         int colAct=this.coordenadas[1];
         int nCol=this.coordenadas[1];
         int dist=0;
-        String msgOrientacion=msgOrientacion="Seleccione la orientacion de desplazamiento\n"
+        String msgOrientacion="Seleccione la orientacion de desplazamiento\n"
                             + "0: Arriba\n"
                             + "1: Derecha\n"
                             + "2: Abajo\n"
@@ -161,7 +164,7 @@ public class Rey extends Piezas{
         int colAct=this.coordenadas[1];
         int nCol=this.coordenadas[1];
         int dist=0;
-         String msgOrientacion=msgOrientacion="Seleccione la orientacion de desplazamiento\n"
+         String msgOrientacion="Seleccione la orientacion de desplazamiento\n"
                             + "0: Arriba\n"
                             + "1: Derecha\n"
                             + "2: Abajo\n"
@@ -173,7 +176,7 @@ public class Rey extends Piezas{
                             + "Opcion: ";
         int orientacion=0;
         orientacion=super.menuOpciones(msgOrientacion,0,7);
-        this.comer=this.calcCasComer();
+        //this.comer=this.calcCasComer();
         
         if(this.comer[orientacion]>0){
             dist=this.comer[orientacion];
@@ -189,7 +192,7 @@ public class Rey extends Piezas{
             super.actualizarTablero(filaAct,colAct);
             
         }else{
-            System.out.println("La pieza no puede en esa direccion");
+            System.out.println("La pieza no puede comer en esa direccion");
         }
     }
     

@@ -5,6 +5,7 @@
 package ajedrez;
 
 import PiezasAjedrez.Alfil;
+import PiezasAjedrez.Caballo;
 import PiezasAjedrez.Peon;
 import PiezasAjedrez.Piezas;
 import PiezasAjedrez.Reina;
@@ -72,6 +73,20 @@ public class Tablero extends javax.swing.JPanel {
         InicializarTorres(0,iconTorreNegra);
         InicializarTorres(7,iconTorreBlanca);
         
+        ImageIcon iconCaballoBlanco=new ImageIcon(getClass().getResource("/ImagenesFiguras/caballoBlanco.png"));
+        ImageIcon iconCaballoNegro=new ImageIcon(getClass().getResource("/ImagenesFiguras/caballoNegro.png"));
+        
+        InicializarCaballos(0,iconCaballoNegro);
+        InicializarCaballos(7,iconCaballoBlanco);
+        
+        
+        
+        ImageIcon iconAlfilBlanco=new ImageIcon(getClass().getResource("/ImagenesFiguras/alfilBlanco.png"));
+        ImageIcon iconAlfilNegro=new ImageIcon(getClass().getResource("/ImagenesFiguras/alfilNegro.png"));
+        
+        InicializarAlfiles(0,iconAlfilNegro);
+        InicializarAlfiles(7,iconAlfilBlanco);
+        
         ImageIcon iconReyBlanco=new ImageIcon(getClass().getResource("/ImagenesFiguras/reyBlanco.png"));
         ImageIcon iconReyNegro=new ImageIcon(getClass().getResource("/ImagenesFiguras/reyNegro.png"));
         
@@ -84,11 +99,6 @@ public class Tablero extends javax.swing.JPanel {
         InicializarReina(0,iconReinaNegra);
         InicializarReina(7,iconReinaBlanca);
         
-        ImageIcon iconAlfilBlanco=new ImageIcon(getClass().getResource("/ImagenesFiguras/alfilBlanco.png"));
-        ImageIcon iconAlfilNegro=new ImageIcon(getClass().getResource("/ImagenesFiguras/alfilNegro.png"));
-        
-        InicializarAlfiles(0,iconAlfilNegro);
-        InicializarAlfiles(7,iconAlfilBlanco);
         
         Piezas.setTablero(Tablero.tablero);
     }
@@ -118,22 +128,48 @@ public class Tablero extends javax.swing.JPanel {
      * @param icon: icono de las torres(0 torres negras, 7 torres blancas)
      */
     private void InicializarTorres(int fila,ImageIcon icon){
-        Piezas TorreIzq=new Torre();
-        Piezas TorreDcha=new Torre();
+        Piezas torreIzq=new Torre();
+        Piezas torreDcha=new Torre();
         
-        TorreIzq.setIcono(icon);
-        TorreDcha.setIcono(icon);
+        torreIzq.setIcono(icon);
+        torreDcha.setIcono(icon);
         
         if(fila==0){
-            TorreIzq.setColor(0);
-            TorreDcha.setColor(0);
+            torreIzq.setColor(0);
+            torreDcha.setColor(0);
         }
         
-        TorreIzq.setCoordenadas(fila, 0);
-        TorreDcha.setCoordenadas(fila,COLUMNAS-1);
-        tablero[fila][0].add(TorreIzq);
-        tablero[fila][COLUMNAS-1].add(TorreDcha);    
+        torreIzq.setCoordenadas(fila, 0);
+        torreDcha.setCoordenadas(fila,COLUMNAS-1);
+        tablero[fila][0].add(torreIzq);
+        tablero[fila][COLUMNAS-1].add(torreDcha);    
     }
+    
+    /**
+     * InicializarCaballos
+     * Inicializa los caballos
+     * @param fila: fila de los caballos
+     * @param icon: icono de los caballos
+     */
+    
+    private void InicializarCaballos(int fila,ImageIcon icon){
+        Piezas caballoIzq=new Caballo();
+        Piezas caballoDcha=new Caballo();
+        
+        caballoIzq.setIcono(icon);
+        caballoDcha.setIcono(icon);
+        
+        if(fila==0){
+            caballoIzq.setColor(0);
+            caballoDcha.setColor(0);
+        }
+        
+        caballoIzq.setCoordenadas(fila, 1);
+        caballoDcha.setCoordenadas(fila,COLUMNAS-2);
+        tablero[fila][1].add(caballoIzq);
+        tablero[fila][COLUMNAS-2].add(caballoDcha);    
+    }
+    
     /**
      * InicializarAlfiles
      * Inicializa los alfiles
@@ -142,21 +178,21 @@ public class Tablero extends javax.swing.JPanel {
      */
     
     private void InicializarAlfiles(int fila,ImageIcon icon){
-        Piezas AlfilIzq=new Alfil();
-        Piezas AlfilDcha=new Alfil();
+        Piezas alfilIzq=new Alfil();
+        Piezas alfilDcha=new Alfil();
         
-        AlfilIzq.setIcono(icon);
-        AlfilDcha.setIcono(icon);
+        alfilIzq.setIcono(icon);
+        alfilDcha.setIcono(icon);
         
         if(fila==0){
-            AlfilIzq.setColor(0);
-            AlfilDcha.setColor(0);
+            alfilIzq.setColor(0);
+            alfilDcha.setColor(0);
         }
         
-        AlfilIzq.setCoordenadas(fila, 2);
-        AlfilDcha.setCoordenadas(fila,COLUMNAS-3);
-        tablero[fila][2].add(AlfilIzq);
-        tablero[fila][COLUMNAS-3].add(AlfilDcha);    
+        alfilIzq.setCoordenadas(fila, 2);
+        alfilDcha.setCoordenadas(fila,COLUMNAS-3);
+        tablero[fila][2].add(alfilIzq);
+        tablero[fila][COLUMNAS-3].add(alfilDcha);    
     }
     
     /**
@@ -166,16 +202,16 @@ public class Tablero extends javax.swing.JPanel {
      * @param icon: icono de los reyes
      */
     private void InicializarRey(int fila,ImageIcon icon){
-        Piezas Rey=new Rey();
+        Piezas rey=new Rey();
         
-        Rey.setIcono(icon);
+        rey.setIcono(icon);
        
         if(fila==0){
-            Rey.setColor(0);
+            rey.setColor(0);
         }
         
-        Rey.setCoordenadas(fila, 4);
-        tablero[fila][4].add(Rey);
+        rey.setCoordenadas(fila, 4);
+        tablero[fila][4].add(rey);
         
     }
     
@@ -186,16 +222,16 @@ public class Tablero extends javax.swing.JPanel {
      * @param icon: icono de las reinas
      */
     private void InicializarReina(int fila,ImageIcon icon){
-        Piezas Reina=new Reina();
+        Piezas reina=new Reina();
         
-        Reina.setIcono(icon);
+        reina.setIcono(icon);
        
         if(fila==0){
-            Reina.setColor(0);
+            reina.setColor(0);
         }
         
-        Reina.setCoordenadas(fila, 3);
-        tablero[fila][3].add(Reina);
+        reina.setCoordenadas(fila, 3);
+        tablero[fila][3].add(reina);
         
     }
     
